@@ -1,7 +1,11 @@
 Butterwire
 ==========
 
-The web-based data service is quandl.
+Assumptions
+-----------
+
+1. Python 3.6.
+1. An API key for the web-based data service quandl is available.
 
 
 Installation
@@ -9,7 +13,7 @@ Installation
 
 After cloning the repository, change into the repo directory and do the following.
 
-1. Create a file `secretvars.py` which defines your quandl `API_KEY`
+1. Create a file `secretvars.py` which defines a Python variable called `API_KEY` with your quandl API key.
 1. Optionally create a file `symbollist.csv` where the first field in each line is a symbol to retrieve.
 1. Create the directories `_kv` and `datajson` 
 
@@ -40,4 +44,10 @@ Several of the behaviours are encapsulated into interchangeable elements, so tha
 1. Calculation of Variance from Average Price
 1. Calculation of Natural Log
 1. Export into MongoDB
+
+Issues
+------
+
+1. Many
+1. The file `models.py` is too long
 
