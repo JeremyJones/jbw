@@ -9,7 +9,7 @@ Using the Ingestor
 
 The ingestor is run with `python ingestor.py`
 
-Note that the file secretvars.py must exist in your directory containing a defined variable called API_KEY.
+Note that the file secretvars.py must exist in your directory containing a defined variable called `API_KEY`.
 
 The data will be consumed from quandl and stored in a key/value datastore.
 
