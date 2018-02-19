@@ -4,7 +4,7 @@ Butterwire
 Assumptions
 -----------
 
-1. Python 3.6.
+1. Python 3.6+
 1. An API key for the web-based data service quandl is available.
 
 
@@ -13,6 +13,7 @@ Installation
 
 After cloning the repository, change into the repo directory and do the following.
 
+1. Install required modules with `pip install -r requirements.txt`. You may want to create a virtual environment to keep the modules contained.
 1. Create a file `secretvars.py` which defines a Python variable called `API_KEY` with your quandl API key.
 1. Optionally create a file `symbollist.csv` where the first field in each line is a symbol to retrieve.
 1. Create the directories `_kv` and `datajson` 
