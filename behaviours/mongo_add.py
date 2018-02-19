@@ -14,7 +14,5 @@ class mongo_add_behaviour:
                           format(dir=docstore.export_directory,
                                  filename=idvalue)
 
-        # raise RuntimeError(export_filename)
-
         with open(export_filename, 'w') as f:
             f.write(jsondumps(document))

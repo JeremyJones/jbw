@@ -7,6 +7,7 @@ from shelve import open as openshelf
 from time import sleep
 from glob import glob
 from os import unlink
+from os import path
 import signal
 import pickle
 
@@ -187,6 +188,11 @@ class MongoCollection(DocumentStore):
 
     def added(self) -> list:
         return self.added
+
+    def has(self, key) -> bool:
+        return path.exists('{}/{}.json'.
+                           format(self.export_directory,
+                                  key))
 
 
 class SymbolList:

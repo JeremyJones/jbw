@@ -13,19 +13,19 @@ def main() -> None:
 
     for symbol, feed in keyvals.items():
         if 'quandl_error' in feed.data:
-            # raise RuntimeWarning("Feed failure for symbol {}".
-            #                      format(feed.symbol))
-            print("Skipping {}".format(symbol), flush=True)
+            continue
+        elif mongo.has(feed.symbol):
             continue
 
         feed.add_variance()
         feed.add_natural_log()
         mongo.add(feed.symbol, feed.data)
-        print("Added {}".format(symbol), flush=True)
+        print("Added {} to mongo.".format(symbol), flush=True)
 
     # tell the ingestor it can housekeep the ones we've put into mongo
     keyvals.done(mongo.added)
-    print("All done.")
+    print("All done, added {} records.".
+          format(len(mongo.added)))
 
 
 if __name__ == '__main__':
