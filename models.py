@@ -142,6 +142,14 @@ class MyPickler(Datastore):
                     open(self._make_filename(key), "wb")
         )
 
+    def isNew(self, symbol) -> bool:
+        try:
+            open(self._make_filename(symbol), 'rb')
+        except FileNotFoundError:
+            return True
+        else:
+            return False
+
     def done(self, keyin) -> None:
         pass
 
