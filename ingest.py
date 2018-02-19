@@ -14,7 +14,7 @@ def main() -> None:
     symlist = SymbolList(SYMBOLS_CSV)
 
     for _, symbol in symlist.next():
-        if kv.isNew(symbol):
+        if kv.get(symbol) is None:
             f = Feed(symbol, url=FEED_URL.format(symbol=symbol))
             f.refresh()
             kv.set(symbol, f)

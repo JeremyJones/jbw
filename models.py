@@ -135,20 +135,17 @@ class MyPickler(Datastore):
         return '{}/{}'.format(self.dir, key)
 
     def get(self, key, default=None) -> object:
-        return pickle.load(open(self._make_filename(key), "rb"))
+        try:
+            val = pickle.load(open(self._make_filename(key), "rb"))
+        except FileNotFoundError:
+            return default
+        else:
+            return val
 
     def set(self, key, val) -> None:
         pickle.dump(val,
                     open(self._make_filename(key), "wb")
         )
-
-    def isNew(self, symbol) -> bool:
-        try:
-            open(self._make_filename(symbol), 'rb')
-        except FileNotFoundError:
-            return True
-        else:
-            return False
 
     def done(self, keyin) -> None:
         pass
