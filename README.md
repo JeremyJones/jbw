@@ -10,8 +10,8 @@ Installation
 After cloning the repository, change into the repo directory and do the following.
 
 1. Create a file `secretvars.py` which defines your quandl `API_KEY`
-1. Optionally create a file symbollist.csv where the first field in each line is a symbol to retrieve.
-1. Create the directories `_kvi` and `datajson` 
+1. Optionally create a file `symbollist.csv` where the first field in each line is a symbol to retrieve.
+1. Create the directories `_kv` and `datajson` 
 
 
 Using the Ingestor
