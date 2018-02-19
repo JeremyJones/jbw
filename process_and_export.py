@@ -1,5 +1,6 @@
 """
-Retrieve and process ingested feed data, adding some derived fields and making the data suitable for import into MongoDB.
+Retrieve and process ingested feed data, adding some derived
+fields and making the data suitable for import into MongoDB.
 """
 from models import MongoCollection
 from models import MyPickler as Ingestor

@@ -56,13 +56,13 @@ class Feed:
         if shelf is not None:
             self.restore(shelf)
 
-        self._set_variance_behaviour = set_variance_behaviour or \
-                                       default_variance_behaviour
+        self._set_variance_behaviour = (set_variance_behaviour or
+                                        default_variance_behaviour)
 
         self.set_variance_behaviour = self._set_variance_behaviour()
 
-        self._set_natural_log_behaviour = set_natural_log_behaviour or \
-                                          default_natural_log_behaviour
+        self._set_natural_log_behaviour = (set_natural_log_behaviour or
+                                           default_natural_log_behaviour)
 
         self.set_natural_log_behaviour = self._set_natural_log_behaviour()
 
@@ -143,9 +143,7 @@ class MyPickler(Datastore):
             return val
 
     def set(self, key, val) -> None:
-        pickle.dump(val,
-                    open(self._make_filename(key), "wb")
-        )
+        pickle.dump(val, open(self._make_filename(key), "wb"))
 
     def done(self, keyin) -> None:
         pass
@@ -180,8 +178,8 @@ class MongoCollection(DocumentStore):
 
         self.added = []
 
-        self._mongo_add_behaviour = mongo_add_behaviour or \
-                                    default_mongo_add_behaviour
+        self._mongo_add_behaviour = (mongo_add_behaviour or
+                                     default_mongo_add_behaviour)
         self.mongo_add_behaviour = self._mongo_add_behaviour()
 
         if export_directory:
