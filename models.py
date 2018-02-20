@@ -15,7 +15,6 @@ from behaviours.variance import \
      set_variance_behaviour as default_variance_behaviour
 from behaviours.natural_log import \
      set_natural_log_behaviour as default_natural_log_behaviour
-
 from behaviours.mongo_add import \
      mongo_add_behaviour as default_mongo_add_behaviour
 
