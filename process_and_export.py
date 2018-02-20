@@ -4,7 +4,7 @@ fields and making the data suitable for import into MongoDB.
 """
 from models import MongoCollection
 from models import MyPickler as Ingestor
-from vars import KV_DIR, EXPORT_DIRECTORY
+from myvars import KV_DIR, EXPORT_DIRECTORY
 from json import dumps as jsondumps
 
 
