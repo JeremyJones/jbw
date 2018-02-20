@@ -10,6 +10,7 @@ from behaviours.mongo_add import \
 from modelz.Timeout import Timeout
 from modelz.Sleeper import Sleeper
 from modelz.Datastore import Datastore
+from modelz.Feed import Feed
 # from modelz.Shelf import Shelf
 
 
