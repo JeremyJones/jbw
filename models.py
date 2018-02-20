@@ -18,21 +18,7 @@ from behaviours.natural_log import \
 from behaviours.mongo_add import \
      mongo_add_behaviour as default_mongo_add_behaviour
 
-
-class Timeout:
-    def __init__(self, seconds=1, error_message='Timeout'):
-        self.seconds = seconds
-        self.error_message = error_message
-
-    def __enter__(self):
-        signal.signal(signal.SIGALRM, self.handle_timeout)
-        signal.alarm(self.seconds)
-
-    def __exit__(self, type, value, traceback):
-        signal.alarm(0)
-
-    def handle_timeout(self, signum, frame):
-        raise TimeoutError(self.error_message)
+from modelz.Timeout import Timeout
 
 
 class Feed:
@@ -40,8 +26,8 @@ class Feed:
 
     def __init__(self, symbol: str, url: str=None, data=None,
                  shelf=None, mongodb=None,
-                 set_variance_behaviour=None,
-                 set_natural_log_behaviour=None) -> None:
+                 variance_behaviour=None,
+                 natural_log_behaviour=None) -> None:
         self.symbol = symbol
         self.url = url
         self.data = data
@@ -55,15 +41,15 @@ class Feed:
         if shelf is not None:
             self.restore(shelf)
 
-        self._set_variance_behaviour = (set_variance_behaviour or
-                                        default_variance_behaviour)
+        self._variance_behaviour = (variance_behaviour or
+                                    default_variance_behaviour)
 
-        self.set_variance_behaviour = self._set_variance_behaviour()
+        self.variance_behaviour = self._variance_behaviour()
 
-        self._set_natural_log_behaviour = (set_natural_log_behaviour or
-                                           default_natural_log_behaviour)
+        self._natural_log_behaviour = (natural_log_behaviour or
+                                       default_natural_log_behaviour)
 
-        self.set_natural_log_behaviour = self._set_natural_log_behaviour()
+        self.natural_log_behaviour = self._natural_log_behaviour()
 
     def __repr__(self) -> str:
         return 'Feed("{s}", "{u}", {d})'.format(
@@ -89,10 +75,16 @@ class Feed:
             return True
 
     def add_variance(self) -> None:
-        self.set_variance_behaviour.set_variance(self)
+        """
+        Add variance information to the whole dataset.
+        """
+        self.variance_behaviour.set_variance(self)
 
     def add_natural_log(self) -> None:
-        self.set_natural_log_behaviour.set_natural_log(self)
+        """
+        Add Natural Log numbers to the whole dataset.
+        """
+        self.natural_log_behaviour.set_natural_log(self)
 
 
 class Datastore:
@@ -200,21 +192,20 @@ class MongoCollection(DocumentStore):
 class SymbolList:
     def __init__(self, filename) -> None:
         self.filename = filename
-        self.symbols = []
 
     def __len__(self) -> int:
+        raise DeprecationWarning
         return len(self.symbols)
 
-    def fill(self) -> None:
+    def next(self, sleep_time=0) -> tuple:
+
         with open(self.filename) as fh:
             for line in fh:
                 if line.startswith('"Symbol"'):
                     continue
                 elif line.startswith('"'):
                     symbol = line[1:line.index('"', 1)]
-                    self.symbols.append(symbol)
 
-    def next(self, sleep_time=0) -> tuple:
         if len(self) == 0:
             self.fill()
 

@@ -14,8 +14,8 @@ class set_variance_behaviour:
 
         for _, data in enumerate(feed.data['dataset']['data']):
             info = dict(zip(columns, data))
-            info['variance'] = calculate_variance(
+            info['Variance'] = calculate_variance(
                                float(info['Close']), all_prices)
-            data.append(info['variance'])
+            data.append(info['Variance'])
 
         feed.data['dataset']['column_names'].append('Variance')

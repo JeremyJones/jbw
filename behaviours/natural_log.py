@@ -11,12 +11,12 @@ class set_natural_log_behaviour:
             info = dict(zip(columns, data))
 
             if previous_price is not None:
-                info['natural_log'] = calculate_natural_log(
+                info['Natural Log'] = calculate_natural_log(
                                       float(info['Close']) - previous_price)
             else:
-                info['natural_log'] = 0.0
+                info['Natural Log'] = 0.0
 
             previous_price = float(info['Close'])
-            data.append(info['natural_log'])
+            data.append(info['Natural Log'])
 
         feed.data['dataset']['column_names'].append('Natural Log')

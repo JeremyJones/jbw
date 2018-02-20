@@ -22,7 +22,7 @@ After cloning the repository, change into the repo directory and do the followin
 Using the Ingestor
 ------------------
 
-The ingestor is run with `python ingestor.py`
+The ingestor is run with `python ingest.py`
 
 Note that the file `secretvars.py` must exist in your directory containing a defined variable called `API_KEY`.
 
