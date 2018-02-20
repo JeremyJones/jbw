@@ -1,123 +1,36 @@
 """
 models.py - models for the backend python engine test
 """
-from requests import get as url_get
-from json import loads as jsonloads
-from shelve import open as openshelf
-from time import sleep
 from glob import glob
 from os import unlink
 from os import path
-import signal
 import pickle
-
-from behaviours.variance import \
-     set_variance_behaviour as default_variance_behaviour
-from behaviours.natural_log import \
-     set_natural_log_behaviour as default_natural_log_behaviour
 from behaviours.mongo_add import \
      mongo_add_behaviour as default_mongo_add_behaviour
-
 from modelz.Timeout import Timeout
+from modelz.Sleeper import Sleeper
+from modelz.Datastore import Datastore
+# from modelz.Shelf import Shelf
 
 
-class Feed:
-    classification = 'quandl.v3.WIKI'
+class SymbolList(Sleeper):
+    def __init__(self, filename) -> None:
+        self.filename = filename
 
-    def __init__(self, symbol: str, url: str=None, data=None,
-                 shelf=None, mongodb=None,
-                 variance_behaviour=None,
-                 natural_log_behaviour=None) -> None:
-        self.symbol = symbol
-        self.url = url
-        self.data = data
-
-        try:
-            if type(self.data) is str:   # could be a dict already, or None
-                self.data = jsonloads(self.data)
-        except TypeError:
-            pass
-
-        if shelf is not None:
-            self.restore(shelf)
-
-        self._variance_behaviour = (variance_behaviour or
-                                    default_variance_behaviour)
-
-        self.variance_behaviour = self._variance_behaviour()
-
-        self._natural_log_behaviour = (natural_log_behaviour or
-                                       default_natural_log_behaviour)
-
-        self.natural_log_behaviour = self._natural_log_behaviour()
-
-    def __repr__(self) -> str:
-        return 'Feed("{s}", "{u}", {d})'.format(
-            s=self.symbol,
-            u=self.url,
-            d='"{}"'.format(self.data) if self.data else "None"
-        )
-
-    def restore(self, shelf=None) -> None:
-        self.data = shelf.get(self.symbol)
-
-    def _refresh_feed(self) -> None:
-        self.data = url_get(self.url).json()
-
-    def refresh(self) -> bool:
-        try:
-            with Timeout(seconds=10):
-                self._refresh_feed()
-        except TimeoutError:
-            self.data = None
-            return False
-        else:
-            return True
-
-    def add_variance(self) -> None:
-        """
-        Add variance information to the whole dataset.
-        """
-        self.variance_behaviour.set_variance(self)
-
-    def add_natural_log(self) -> None:
-        """
-        Add Natural Log numbers to the whole dataset.
-        """
-        self.natural_log_behaviour.set_natural_log(self)
+    def next(self, sleep_time=0) -> tuple:
+        with open(self.filename) as fh:
+            counter = -1
+            for line in fh:
+                self.sleep(sleep_time)
+                counter += 1
+                if line.startswith('"Symbol"'):
+                    continue
+                elif line.startswith('"'):
+                    symbol = line[1:line.index('"', 1)]
+                    yield counter, symbol
 
 
-class Datastore:
-    def get(self, key, default=None):
-        return self.kv.get(key, default)
-
-    def set(self, key, val):
-        self.kv[key] = val
-
-    def open(self) -> None:
-        pass
-
-    def finish(self) -> None:  # override this
-        raise NotImplementedError
-
-
-class Shelf(Datastore):
-    def __init__(self, shelf=None) -> None:
-        self.kv_file = shelf
-        self._open()
-
-    def _open(self) -> None:
-        self.kv = openshelf(self.kv_file)
-
-    def finish(self) -> None:
-        self.kv.close()
-
-    def items(self) -> tuple:
-        for key, val in self.kv.items():
-            yield key, val
-
-
-class MyPickler(Datastore):
+class MyPickler(Datastore, Sleeper):
 
     def __init__(self, dirname) -> None:
         self.dir = dirname
@@ -146,11 +59,11 @@ class MyPickler(Datastore):
         else:
                 unlink('{}/{}'.format(self.dir, keyin))
 
-    def items(self) -> tuple:
-        """
-        https://stackoverflow.com/questions/1698596/how-can-i-traverse-a-file-system-with-a-generator
-        """
+    def items(self, sleep_time=0) -> tuple:
+        # https://stackoverflow.com/questions/1698596/how-can-i-traverse-a-file-system-with-a-generator
+
         for filename in glob('{}/*'.format(self.dir)):
+            self.sleep(sleep_time)
             key = filename[len(self.dir) + 1:]
             yield key, self.get(key)
 
@@ -158,11 +71,7 @@ class MyPickler(Datastore):
         pass
 
 
-class DocumentStore:
-    pass
-
-
-class MongoCollection(DocumentStore):
+class MongoCollection:
     def __init__(self,
                  export_directory=None,
                  mongo_add_behaviour=None) -> None:
@@ -189,27 +98,5 @@ class MongoCollection(DocumentStore):
                                   key))
 
 
-class SymbolList:
-    def __init__(self, filename) -> None:
-        self.filename = filename
-
-    def __len__(self) -> int:
-        raise DeprecationWarning
-        return len(self.symbols)
-
-    def next(self, sleep_time=0) -> tuple:
-
-        with open(self.filename) as fh:
-            for line in fh:
-                if line.startswith('"Symbol"'):
-                    continue
-                elif line.startswith('"'):
-                    symbol = line[1:line.index('"', 1)]
-
-        if len(self) == 0:
-            self.fill()
-
-        for count, symbol in enumerate(self.symbols):
-            if count > 0:
-                sleep(sleep_time)
-            yield count, symbol
+class DocumentStore(MongoCollection):
+    pass

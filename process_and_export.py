@@ -2,15 +2,15 @@
 Retrieve and process ingested feed data, adding some derived
 fields and making the data suitable for import into MongoDB.
 """
-from models import MongoCollection
 from models import MyPickler as Ingestor
+from models import DocumentStore
 from myvars import KV_DIR, EXPORT_DIRECTORY
 from json import dumps as jsondumps
 
 
 def main() -> None:
     keyvals = Ingestor(KV_DIR)
-    collection = MongoCollection(EXPORT_DIRECTORY)
+    collection = DocumentStore(EXPORT_DIRECTORY)
 
     for symbol, feed in keyvals.items():
         if 'quandl_error' in feed.data:
